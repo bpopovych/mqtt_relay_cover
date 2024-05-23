@@ -64,7 +64,7 @@ async def async_setup_platform(
         hass (HomeAssistant): The Home Assistant core object.
         config (ConfigType): The configuration for the MQTT relay covers.
         async_add_entities (AddEntitiesCallback): Callback function to add entities.
-        discovery_info (DiscoveryInfoType | None, optional): Discovery information. Defaults to None.
+        discovery_info (DiscoveryInfoType | None, optional): Discovery information.
 
     """
 

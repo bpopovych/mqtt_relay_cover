@@ -80,7 +80,7 @@ cover:
 Once configured, the shades can be controlled via the standard Home Assistant user interface. The custom services for calibration and position setting are also available:
 
 - **Calibrate**: Ensures the shade's physical state matches the expected logical state.
-- **SetPosition**: Manually sets the current position of a shade.
+- **SetPosition**: Manually sets the current position of a shade. //TODO not exposed yet
 
 ## Contributing
 

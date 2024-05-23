@@ -33,7 +33,6 @@ like `CONF_FRIENDLY_NAME`, `CONF_UNIQUE_ID`, `CONF_OPENING_TIME`, and `CONF_CLOS
 among others. Opening and closing times are expected in milliseconds.
 
 Attributes:
-- `_default_name`: The default name for the `MQTTRelayCover` entity.
 - `should_poll`: A boolean indicating whether the entity should be polled for updates.
 - `_attr_supported_features`: A bitmask representing the supported features of the cover entity.
 
@@ -70,7 +69,7 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
-_CHECK_INTERVAL = 0.1
+_CHECK_INTERVAL = 0.1  # interval in seconds to check if cover needs to be stopped
 _MIN_POSITION = 0
 _MAX_POSITION = 100
 _MAX_PERCENT = 100
@@ -87,7 +86,7 @@ class MQTTRelayCover(CoverEntity):
 
     The cover can be opened, closed, stopped, and set to a specific position. It supports
     features such as pre-configured opening and closing times, calibration, and MQTT integration.
-    Note that *tilt* operations are not supported.
+    Note that **tilt** operations are not supported.
 
     Note:
     - The cover position is represented as a percentage, where 0% indicates a fully closed
@@ -97,13 +96,10 @@ class MQTTRelayCover(CoverEntity):
 
     Args:
         object_id (str): The unique identifier for the entity. Used as a fallback for
-                         naming and as part of the unique_id if not provided in
-                         `entity_config`.
+    naming and as part of the unique_id if not provided in `entity_config`.
         entity_config (ConfigType): The configuration for the entity. Expected to contain
-                                    keys like `CONF_FRIENDLY_NAME`, `CONF_UNIQUE_ID`,
-                                    `CONF_OPENING_TIME`, and `CONF_CLOSING_TIME`, among
-                                    others. Opening and closing times are expected in
-                                    milliseconds.
+    keys like `CONF_FRIENDLY_NAME`, `CONF_UNIQUE_ID`, `CONF_OPENING_TIME`, and
+    `CONF_CLOSING_TIME`, among others. Opening and closing times are expected in miliseconds.
 
     """
 
@@ -128,12 +124,11 @@ class MQTTRelayCover(CoverEntity):
 
         Args:
             object_id (str): The unique identifier for the entity. Used as a fallback
-                            for naming and as part of the unique_id if not provided
-                            in `entity_config`.
+        for naming and as part of the unique_id if not provided in `entity_config`.
             entity_config (ConfigType): The configuration for the entity. Expected to
-                                        contain keys like `CONF_FRIENDLY_NAME`, `CONF_UNIQUE_ID`,
-                                        `CONF_OPENING_TIME`, and `CONF_CLOSING_TIME`, among others.
-                                        Opening and closing times are expected in milliseconds.
+        contain keys like `CONF_FRIENDLY_NAME`, `CONF_UNIQUE_ID`, `CONF_OPENING_TIME`,
+        and `CONF_CLOSING_TIME`, among others. Opening and closing times are expected in
+        milliseconds.
 
         """
         self._lock = asyncio.Lock()
@@ -179,10 +174,7 @@ class MQTTRelayCover(CoverEntity):
         """
         self._store = Store(self.hass, version=1, key=DOMAIN)
         stored_data = await self._store.async_load()
-        if stored_data and self.unique_id in stored_data:
-            self._attr_current_cover_position = stored_data[self.unique_id]
-        else:
-            self._attr_current_cover_position = 0  # Default value
+        self._attr_current_cover_position = stored_data.get(self.unique_id, 0)
 
         # Register the calibrate service
         self.platform.async_register_entity_service(
@@ -212,11 +204,11 @@ class MQTTRelayCover(CoverEntity):
     async def async_set_cover_position(self, **kwargs) -> None:
         """Asynchronously move the cover to a specific position using MQTT commands.
 
-        This method stops any ongoing movement, calculates the direction
-        (open/close), and moves the cover accordingly. It monitors and adjusts
-        the movement in real-time until the target position is reached, the
-        maximum movement time is exceeded, or an external stop/change command is
-        received.
+        This method stops any ongoing movement, calculates the direction - opening or
+        closing, and moves the cover accordingly. It monitors and adjusts
+        the movement in real-time every `_CHECK_INTERVAL` period until the target
+        position is reached, the maximum movement time is exceeded, or an external
+        stop/change direction command is received.
 
         Args:
             **kwargs: Keyword arguments. Must include 'position', an integer
@@ -231,17 +223,17 @@ class MQTTRelayCover(CoverEntity):
 
         """
 
-        # Initial preparation: Stop any ongoing movement to reset states.
-        # Setting both opening and closing to False allows exiting our of
-        # critical section, so this enables correct behaviour even if
-        # multiple *set_cover_position* calls is made in parallel.
+        # Initial preparation: Stops any ongoing movement to reset states.
+        # Setting both opening and closing to False allows exiting out of
+        # the critical section, so this enables correct behaviour even if
+        # multiple *set_cover_position* calls are made in parallel.
         await self.async_stop_cover()
 
         try:
             # Critical section starts here, the only variables that can be changed
-            # outside that block are *_attr_is_opening*, *_attr_is_closing* and
-            # *_attr_current_cover_position*. First two are used to enable cover
-            # stop or change of the movment direction at any moment.
+            # outside that block are `_attr_is_opening`, `_attr_is_closing` and
+            # `_attr_current_cover_position`. First two are used to make cover
+            # stop or to change the movment direction at any moment.
             async with self._lock:
                 # Extract the target position, defaulting to 0 if not specified.
                 # Ensure that the target position is between 0 and 100%.
@@ -275,7 +267,7 @@ class MQTTRelayCover(CoverEntity):
                 # Monitor movement progress and adjust position in real-time.
                 # Loop until we either:
                 # 1. Exceed defined time to reach the limit position, either
-                #  absolutely absolutely open or absolutely closed (the time is up)
+                #  absolutely open or absolutely closed (the time is up)
                 # 2. Reach out the desired target position or 100% for opening or 0%
                 #  for closing - whatever comes first
                 # 3. The state for opening become False while opening
@@ -381,7 +373,7 @@ class MQTTRelayCover(CoverEntity):
         between the set position of the cover and its physical position. It is typically
         used for initial configuration or to correct the physical position and its logical
         representation after adjustments made outside of Home Assistant, such as manual
-        adjustments or power outages.
+        adjustments or after some messy power outages.
 
         Note that this method is not intended to be used on a regular basis, but rather as
         a one-time or occasional procedure to ensure accurate positioning of the cover.
@@ -405,8 +397,8 @@ class MQTTRelayCover(CoverEntity):
             await self.__async_publish(self._mqtt_payload_close)
             await asyncio.sleep(self._closing_time + 1)
             await self.__async_publish(self._mqtt_payload_stop)
-            self._attr_current_cover_position = 0
             await asyncio.sleep(1)
+            self._attr_current_cover_position = 0
             await self._store.async_save(
                 {self.unique_id: self._attr_current_cover_position}
             )

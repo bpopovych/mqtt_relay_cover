@@ -4,7 +4,7 @@
     "codeowners": [
         "@bpopovych"
     ],
-    "config_flow": true,
+    "config_flow": false,
     "dependencies": [
         "mqtt"
     ],
