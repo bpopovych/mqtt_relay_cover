@@ -26,8 +26,11 @@ Note:
 - The class assumes that the MQTT broker and topics are properly configured in Home Assistant.
 
 Args:
-    object_id (str): The unique identifier for the entity. Used as a fallback for naming and as part of the unique_id if not provided in `entity_config`.
-    entity_config (ConfigType): The configuration for the entity. Expected to contain keys like `CONF_FRIENDLY_NAME`, `CONF_UNIQUE_ID`, `CONF_OPENING_TIME`, and `CONF_CLOSING_TIME`, among others. Opening and closing times are expected in milliseconds.
+    object_id (str): The unique identifier for the entity. Used as a fallback for naming and
+ as part of the unique_id if not provided in `entity_config`.
+    entity_config (ConfigType): The configuration for the entity. Expected to contain keys
+like `CONF_FRIENDLY_NAME`, `CONF_UNIQUE_ID`, `CONF_OPENING_TIME`, and `CONF_CLOSING_TIME`,
+among others. Opening and closing times are expected in milliseconds.
 
 Attributes:
 - `_default_name`: The default name for the `MQTTRelayCover` entity.
