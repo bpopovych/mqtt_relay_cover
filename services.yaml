@@ -1,0 +1,7 @@
+# Describes the format for available mqtt_relay_cover services
+
+calibrate:
+  target:
+    entity:
+      domain: cover
+      integration: mqtt_relay_cover
