@@ -135,7 +135,7 @@ class MQTTRelayCover(CoverEntity):
         self._attr_is_closing = False
         self._attr_is_opening = False
         # 0 is closed, 100 is open, values are set in percents (%)
-        self._attr_current_cover_position: int | None = None
+        self._attr_current_cover_position: int = 0
 
         self.unique_id: str = entity_config.get(CONF_UNIQUE_ID, object_id)
         self._attr_name = entity_config.get(
