@@ -1,6 +1,6 @@
 {
     "domain": "mqtt_relay_cover",
-    "name": "MQTT Relay Powered Cover",
+    "name": "MQTT Relay Cover",
     "codeowners": [
         "@bpopovych"
     ],
