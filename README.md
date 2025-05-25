@@ -40,7 +40,7 @@ git clone https://github.com/bpopovych/mqtt_relay_cover.git
 
 2. **Add Configuration to `configuration.yaml`**:
 
-- Add the necessary configuration to your `configuration.yaml` file under the `mqtt_shade` domain.
+- Add the necessary configuration to your `configuration.yaml` file under the `mqtt_relay_cover` domain. (This domain registers the custom cover platform.)
 
 3. **Restart Home Assistant**:
 
