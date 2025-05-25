@@ -174,6 +174,8 @@ class MQTTRelayCover(CoverEntity):
         """
         self._store = Store(self.hass, version=1, key=DOMAIN)
         stored_data = await self._store.async_load()
+        if stored_data is None:
+            stored_data = {}
         self._attr_current_cover_position = stored_data.get(self.unique_id, 0)
 
         # Register the calibrate service
