@@ -73,7 +73,7 @@ _CHECK_INTERVAL = 0.1  # interval in seconds to check if cover needs to be stopp
 _MIN_POSITION = 0
 _MAX_POSITION = 100
 _MAX_PERCENT = 100
-_MILISECONDS_IN_SECOND = 1000.0
+_MILLISECONDS_IN_SECOND = 1000.0
 _DEFAULT_NAME = "MQTT Relay Cover"
 
 
@@ -99,7 +99,7 @@ class MQTTRelayCover(CoverEntity):
     naming and as part of the unique_id if not provided in `entity_config`.
         entity_config (ConfigType): The configuration for the entity. Expected to contain
     keys like `CONF_FRIENDLY_NAME`, `CONF_UNIQUE_ID`, `CONF_OPENING_TIME`, and
-    `CONF_CLOSING_TIME`, among others. Opening and closing times are expected in miliseconds.
+    `CONF_CLOSING_TIME`, among others. Opening and closing times are expected in milliseconds.
 
     """
 
@@ -150,11 +150,11 @@ class MQTTRelayCover(CoverEntity):
         self._store: Store | None = None
 
         self._opening_time: float = (
-            entity_config.get(CONF_OPENING_TIME, 0) / _MILISECONDS_IN_SECOND
+            entity_config.get(CONF_OPENING_TIME, 0) / _MILLISECONDS_IN_SECOND
         )
         self._closing_time: float = (
             entity_config.get(CONF_CLOSING_TIME, self._opening_time)
-            / _MILISECONDS_IN_SECOND
+            / _MILLISECONDS_IN_SECOND
         )
         self._mqtt_command_topic: str = entity_config.get(CONF_MQTT_COMMAND_TOPIC)
         self._mqtt_payload_open: str = entity_config.get(CONF_MQTT_PAYLOAD_OPEN)
