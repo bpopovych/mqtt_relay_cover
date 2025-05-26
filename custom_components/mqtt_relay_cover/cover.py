@@ -12,6 +12,7 @@ from homeassistant.const import (
     CONF_UNIQUE_ID,
 )
 from homeassistant.core import HomeAssistant
+from homeassistant.config_entries import ConfigEntry
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
@@ -54,7 +55,7 @@ async def async_setup_platform(
     config: ConfigType,
     async_add_entities: AddEntitiesCallback,
     discovery_info: DiscoveryInfoType | None = None,
-) -> None:
+    ) -> None:
     """Set up the MQTT Relay Cover.
 
     This function is responsible for setting up the MQTT Relay Cover component.
@@ -75,3 +76,10 @@ async def async_setup_platform(
             if not _LOGGER.info("Setting MQTT Relay Cover: %s", object_id)
         ]
     )
+
+
+async def async_setup_entry(
+    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
+) -> None:
+    """Set up MQTT Relay Cover from a config entry."""
+    async_add_entities([MQTTRelayCover(entry.entry_id, entry.data)])
