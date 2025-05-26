@@ -58,8 +58,8 @@ cover:
     office_left_shade:
       friendly_name: "Office Left Shade"
       unique_id: office_left_shade
-      opening_time: 1500 # time in miliseconds to fully open
-      closing_time: 2000 # time in miliseconds to fully close
+      opening_time: 1500 # time in milliseconds to fully open
+      closing_time: 2000 # time in milliseconds to fully close
       mqtt_command_topic: "your_mqtt_topic"
       mqtt_payload_open: "your_mqtt_open_payload"
       mqtt_payload_close: "your_mqtt_close_payload"
