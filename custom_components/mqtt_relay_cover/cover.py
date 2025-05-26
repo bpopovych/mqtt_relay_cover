@@ -68,10 +68,14 @@ async def async_setup_platform(
 
     """
 
+    def _log_and_return_entity(entity: MQTTRelayCover) -> MQTTRelayCover:
+        """Log the entity being set up."""
+        _LOGGER.info("Setting up MQTT Relay Cover: %s", entity.object_id)
+        return entity
+
     async_add_entities(
         [
-            MQTTRelayCover(object_id, entity_config)
+            _log_and_return_entity(MQTTRelayCover(object_id, entity_config))
             for object_id, entity_config in config[CONF_COVERS].items()
-            if not _LOGGER.info("Setting MQTT Relay Cover: %s", object_id)
         ]
     )
