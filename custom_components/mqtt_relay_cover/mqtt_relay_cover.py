@@ -137,6 +137,7 @@ class MQTTRelayCover(CoverEntity):
         # 0 is closed, 100 is open, values are set in percents (%)
         self._attr_current_cover_position: int = 0
 
+        self.object_id: str = object_id
         self.unique_id: str = entity_config.get(CONF_UNIQUE_ID, object_id)
         self._attr_name = entity_config.get(
             CONF_NAME,
@@ -160,6 +161,14 @@ class MQTTRelayCover(CoverEntity):
         self._mqtt_payload_open: str = entity_config.get(CONF_MQTT_PAYLOAD_OPEN)
         self._mqtt_payload_close: str = entity_config.get(CONF_MQTT_PAYLOAD_CLOSE)
         self._mqtt_payload_stop: str = entity_config.get(CONF_MQTT_PAYLOAD_STOP)
+
+    def __str__(self) -> str:
+        """Return a readable string representation of the entity."""
+        return self.object_id
+
+    def __repr__(self) -> str:
+        """Return an unambiguous representation of the entity."""
+        return f"<{self.__class__.__name__} {self.object_id}>"
 
     async def async_added_to_hass(self):
         """Handle when an entity is added to Home Assistant.
